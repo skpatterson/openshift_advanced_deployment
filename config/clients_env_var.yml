@@ -5,7 +5,7 @@ infra_projs:
   - proj: cicd-dev
     display: "CI/CD"
     users:
-      - steve
+      - shawn
     client: build
 company_projs:
   - proj: alpha-dev
@@ -35,31 +35,31 @@ company_projs:
   - proj: tasks-build
     display: "Tasks - Build"
     users:
-      - steve
+      - shawn
     client: common
   - proj: tasks-dev
     display: "Tasks - Dev"
     users:
-      - steve
+      - shawn
     client: common
   - proj: tasks-test
     display: "Tasks - Stage"
     users:
-      - steve
+      - shawn
     client: common
   - proj: tasks-prod
     display: "Tasks - Prod"
     users:
-      - steve
+      - shawn
     client: common
 company_users:
   amy:
   andrew:
   brian:
   betty:
-  steve:
-  steve-admin:
+  shawn:
+  shawn-admin:
 cadmins_users:
-  steve-admin:
+  shawn-admin:
   cadmin1:
 
