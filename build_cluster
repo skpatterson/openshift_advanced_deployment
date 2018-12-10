@@ -1,0 +1,151 @@
+#!/bin/bash
+
+#
+# Global Variables
+#
+BASENAME=$0
+#DEBUG=0
+
+#
+# Check effective UID
+#
+MYUID=`id -u`
+if [ "${MYUID}" -ne 0 ]; then
+
+  echo ""
+  echo "Must be run as root"
+  echo ""
+
+fi
+
+HOSTN=`hostname`
+if [[ "${HOSTN}" =~ bastion\..*\.example\.opentlc\.com ]]; then
+
+  GUID=`echo ${HOSTN} | sed -e 's/^bastion\.//' -e 's/\..*//g'`
+  
+fi
+
+#
+# Get info we need
+#
+if [ -n "${GUID}" ]; then
+
+  echo ""
+  echo "Found GUID ${GUID}"
+  echo ""
+
+elif [ "$#" -ne 1 ]; then
+
+  echo ""
+  echo "Usage:"
+  echo "  ${BASENAME} GUID"
+  echo "  e.g. ${BASENAME} SESW"
+  echo ""
+  exit 1
+
+else
+
+  GUID=${1}
+
+fi
+
+if [ ! -d "workdir" ]; then
+  mkdir workdir
+fi
+
+echo ""
+echo "Building OCP inventory for ${GUID}"
+echo ""
+ansible-playbook -i /etc/ansible/hosts -e "osrelease=3.9" -e "ANSIBLE_REPO_PATH=`pwd`" -e "guid=${GUID}" -e "internaldns=internal" config/setup_hosts.yml
+
+echo ""
+echo "Inventory built at workdir/hosts"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+echo ""
+echo "Pre-software OCP cluster config on ${GUID}"
+echo ""
+ansible-playbook -i workdir/hosts -f 20 -e "ANSIBLE_REPO_PATH=`pwd`" config/pre_software.yml
+
+echo ""
+echo "Completed Pre-software OCP cluster config on ${GUID}"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+echo ""
+echo "Building OCP cluster on ${GUID}"
+echo ""
+ansible-playbook -i workdir/hosts -f 20 /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+
+echo ""
+echo "Built Cluster ${GUID}"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+ansible -i workdir/hosts masters[0] -b -m fetch -a "src=/root/.kube/config dest=/root/.kube/config flat=yes"
+
+echo ""
+echo "Post-software OCP cluster config on ${GUID}"
+echo ""
+ansible-playbook -i workdir/hosts -e "ANSIBLE_REPO_PATH=`pwd`" config/post_software.yml
+
+echo ""
+echo "Completed Post-software OCP cluster config on ${GUID}"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+echo ""
+echo "Setup storage for OCP cluster on ${GUID}"
+echo ""
+ansible-playbook -i workdir/hosts -e "ANSIBLE_REPO_PATH=`pwd`" -e "guid=${GUID}" config/setup_storage.yml
+
+echo ""
+echo "Setup storage Complete"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+echo ""
+echo "Setup Accounts and Projects"
+echo ""
+ansible-playbook -i workdir/hosts -e "ANSIBLE_REPO_PATH=`pwd`" config/setup_clients.yml
+
+echo ""
+echo "Account/Projects setup complete"
+echo ""
+
+if [ -n "${DEBUG}" ]; then
+  echo "pause"
+  read j
+fi
+
+echo ""
+echo "Setup CI/CD"
+echo ""
+ansible-playbook -i workdir/hosts -e "ANSIBLE_REPO_PATH=`pwd`" config/setup_cicd.yml
+
+echo ""
+echo "CICD Setup complete"
+echo ""
+
+

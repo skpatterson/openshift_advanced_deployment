@@ -1,0 +1,62 @@
+# vim: set ft=ansible:
+---
+
+- name: Create CICD
+  hosts: localhost
+  gather_facts: False
+  become: yes
+  vars_files:
+    - "{{ ANSIBLE_REPO_PATH }}/config/clients_env_var.yml"
+  tasks:
+#    - name: Check to see if Jenkins is already setup
+#      shell: "oc get svc/jenkins -n {{ cicd_project }}"
+#      register: jenkins_chk
+#      failed_when: false
+#      changed_when: false
+#      ignore_errors: yes
+
+#    - name: Setup Persistent Jenkins
+#      shell: "oc new-app jenkins-persistent --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi -n {{ cicd_project }} >/dev/null 2>&1"
+#      check_mode: no
+#      when: jenkins_chk.rc != 0
+
+#    - name: Increase CPU resources for Jenkins
+#      shell: "oc set resources dc jenkins --limits=cpu=2 --requests=cpu=1 -n {{ cicd_project }} >/dev/null 2>&1"
+#      check_mode: no
+#      when: jenkins_chk.rc != 0
+
+#    - name: Pause for Jenkins to start - 2 mins
+#      shell: "sleep 120"
+#      check_mode: no
+#      changed_when: false
+#      when: jenkins_chk.rc != 0
+
+
+#    - name: Check if CI/CD pipeline template has been uploaded
+#      shell: "oc get template cicd-pipeline -n {{ cicd_project }}"
+#      register: template_chk
+#      failed_when: false
+#      changed_when: false
+#      ignore_errors: yes
+#
+#    - name: Upload CI/CD pipeline template
+#      shell: "oc create -f {{ ANSIBLE_REPO_PATH }}/config/cicd-template.yaml -n {{ cicd_project }} >/dev/null 2>&1"
+#      check_mode: no
+#      when: template_chk.rc != 0
+
+    - name: Create pipeline
+      shell: "oc process -f {{ ANSIBLE_REPO_PATH }}/config/cicd-template.yaml --param BUILD_PROJECT=tasks-build --param DEV_PROJECT=tasks-dev --param STAGE_PROJECT=tasks-test --param PROD_PROJECT=tasks-prod --param=WITH_CHE=false --param=EPHEMERAL=false | oc create -f - -n {{ cicd_project }}"
+#      shell: "oc process -f {{ ANSIBLE_REPO_PATH }}/config/cicd-template.yaml --param DEV_PROJECT=cicd-dev --param STAGE_PROJECT=cicd-test --param PROD_PROJECT=cicd-prod --param=WITH_CHE=false --param=EPHEMERAL=false | oc create -f - -n {{ cicd_project }}"
+      check_mode: no
+#      when: jenkins_chk.rc != 0
+
+    - name: Pause for Pipeline to be setup - 5 mins
+      shell: "sleep 300"
+      check_mode: no
+      changed_when: false
+
+    - name: Start tasks-pipeline build
+      shell: "oc start-build tasks-pipeline -n {{ cicd_project }}"
+      check_mode: no
+
+
