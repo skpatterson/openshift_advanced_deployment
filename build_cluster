@@ -56,7 +56,7 @@ fi
 echo ""
 echo "Building OCP inventory for ${GUID}"
 echo ""
-ansible-playbook -i /etc/ansible/hosts -e "osrelease=3.9" -e "ANSIBLE_REPO_PATH=`pwd`" -e "guid=${GUID}" -e "internaldns=internal" config/setup_hosts.yml
+ansible-playbook -i /etc/ansible/hosts -e "osrelease=3.11" -e "ANSIBLE_REPO_PATH=`pwd`" -e "guid=${GUID}" -e "internaldns=internal" config/setup_hosts.yml
 
 echo ""
 echo "Inventory built at workdir/hosts"
