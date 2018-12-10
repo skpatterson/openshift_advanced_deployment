@@ -1,0 +1,1 @@
+# openshift_advanced_deployment
