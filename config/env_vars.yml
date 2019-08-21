@@ -21,7 +21,7 @@ config_nfs_uservols: "true"
 user_vols: 50
 user_vols_size: 4Gi
 master_api_port: 443
-osrelease: 3.9.30
+osrelease: 3.1.51
 openshift_master_overwrite_named_certificates: true
 deploy_openshift: false
 deploy_openshift_post: false
@@ -70,7 +70,7 @@ software_to_deploy: "openshift"
 #### OCP IMPLEMENTATION LAB
 ################################################################################
 
-repo_version: '3.9'
+repo_version: '3.11'
 cloudapps_dns: '*.apps.{{subdomain_base}}.'
 master_public_dns: "loadbalancer.{{subdomain_base}}."
 
@@ -100,8 +100,10 @@ rhel_repos:
 - rhel-7-server-rpms
 - rhel-7-server-extras-rpms
 - rhel-7-server-ose-{{repo_version}}-rpms
-- rhel-7-server-ansible-2.4-rpms
+- rhel-7-server-ansible-2.6-rpms
 - rh-gluster-3-client-for-rhel-7-server-rpms
+- rhel-7-server-optional-rpms
+- rhel-7-server-rh-common-rpms
 
 use_subscription_manager: false
 use_own_repos: true
