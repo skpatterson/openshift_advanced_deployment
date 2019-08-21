@@ -1,5 +1,5 @@
 #
-# /etc/ansible/hosts file for OpenShift Container Platform 3.9.40
+# /etc/ansible/hosts file for OpenShift Container Platform 3.11.51
 #
 
 [OSEv3:vars]
@@ -62,15 +62,15 @@ openshift_storage_glusterfs_block_storageclass_default=false
 
 # Container image to use for glusterfs pods
 openshift_storage_glusterfs_image=registry.access.redhat.com/rhgs3/rhgs-server-rhel7
-openshift_storage_glusterfs_version=v3.9
+openshift_storage_glusterfs_version=v3.11
 
 # Container image to use for glusterblock-provisioner pod
 openshift_storage_glusterfs_block_image=registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7
-openshift_storage_glusterfs_block_version=v3.9
+openshift_storage_glusterfs_block_version=v3.11
 
 # Container image to use for heketi pods
 openshift_storage_glusterfs_heketi_image=registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7
-openshift_storage_glusterfs_heketi_version=v3.9
+openshift_storage_glusterfs_heketi_version=v3.11
 {% endif %}
 
 {% if install_nfs|bool %}
@@ -230,7 +230,7 @@ openshift_prometheus_alertbuffer_cpu_limit=200m
 # openshift_prometheus_additional_rules_file=/root/prometheus_alerts_rules.yml
 
 # Necessary for 3.9.25+
-openshift_prometheus_node_exporter_image_version=v3.9
+openshift_prometheus_node_exporter_image_version=v3.11
 
 # Enable cluster logging
 ########################
