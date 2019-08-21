@@ -88,7 +88,7 @@
       ignore_errors: true
       when:
         - osrelease is version_compare('3.7', '>=')
-        - osrelease is version_compare('3.10', '<')
+        - osrelease is version_compare('3.11', '<')
 
 - name: Remove all users from self-provisioners group
   hosts: masters
@@ -181,7 +181,7 @@
         - master_config.changed or master_config2.changed
         - osrelease is version_compare('3.7', '<')
 
-    - name: Restart master API service (3.7 - 3.9)
+    - name: Restart master API service (3.7 - 3.11)
       service:
         name: atomic-openshift-master-api
         state: restarted
@@ -277,7 +277,7 @@
         registry.access.redhat.com/openshift3/ose-recycler:v{{ osrelease }}
       when:
       - osrelease is version_compare('3.7', '>=')
-      - osrelease is version_compare('3.10', '<')
+      - osrelease is version_compare('3.11', '<')
       - install_nfs|bool
 
     - name: Tag ose-recycler Image (for OCP 3.10+)
